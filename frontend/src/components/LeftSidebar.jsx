@@ -10,6 +10,7 @@ import CreatePost from './CreatePost'
 import { setPosts, setSelectedPost } from '@/redux/postSlice'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import { Button } from './ui/button'
+import logo from "../assets/flower.png";
 
 const LeftSidebar = () => {
     const navigate = useNavigate();
@@ -67,7 +68,14 @@ const LeftSidebar = () => {
     return (
         <div className='hidden lg:block fixed top-0 left-0 z-10 px-4 border-r border-gray-300 w-[16%] h-screen '>
             <div className='flex flex-col'>
-                <h1 className='my-8 pl-3 font-bold text-xl'>SOCIAL</h1>
+                {/* <h1 className='my-8 pl-3 font-bold text-xl'>SOCIAL</h1> */}
+                <div className="my-6 flex justify-center">
+    <img
+        src={logo}
+        alt="Social Logo"
+        className="w-50 h-auto object-contain"
+    />
+</div>
                 <div>
                     {
                         sidebarItems.map((item, index) => {
