@@ -14,6 +14,6 @@ const useGetRTM = () => {
         return () => {
             socket?.off('newMessage');
         }
-    }, [messages, setMessages]);
+    }, [messages, socket, dispatch]);
 };
 export default useGetRTM;

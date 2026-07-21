@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import axios from 'axios';
+import api from '@/lib/axios';
 import { Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -15,10 +15,10 @@ const EditProfile = () => {
     const { user } = useSelector(store => store.auth);
     const [loading, setLoading] = useState(false);
     const [input, setInput] = useState({
-        profilePhoto: user?.profilePicture,
-        bio: user?.bio,
-        gender: user?.gender
-    });
+    profilePhoto: null,
+    bio: user?.bio || "",
+    gender: user?.gender || ""
+});
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -33,20 +33,20 @@ const EditProfile = () => {
 
 
     const editProfileHandler = async () => {
-        console.log(input);
         const formData = new FormData();
         formData.append("bio", input.bio);
-        formData.append("gender", input.gender);
+        if(input.gender){
+    formData.append("gender", input.gender);
+}
         if(input.profilePhoto){
             formData.append("profilePhoto", input.profilePhoto);
         }
         try {
             setLoading(true);
-            const res = await axios.post('http://localhost:3000/api/v1/user/profile/edit', formData,{
+            const res = await api.post('/api/v1/user/profile/edit', formData,{
                 headers:{
                     'Content-Type':'multipart/form-data'
                 },
-                withCredentials:true
             });
             if(res.data.success){
                 const updatedUserData = {
@@ -62,7 +62,7 @@ const EditProfile = () => {
 
         } catch (error) {
             console.log(error);
-            toast.error(error.response.data.messasge);
+            toast.error(error.response?.data?.message || 'Failed to update profile');
         } finally{
             setLoading(false);
         }

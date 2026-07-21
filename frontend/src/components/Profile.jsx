@@ -6,9 +6,10 @@ import { useSelector } from 'react-redux';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { AtSign, Heart, MessageCircle } from 'lucide-react';
-import axios from "axios";
-import { toast } from "sonner";
-
+import api from '@/lib/axios';
+import { toast } from 'sonner';
+import { useDispatch } from 'react-redux';
+import { setUserProfile } from '@/redux/authSlice';
 
 const Profile = () => {
   const params = useParams();
@@ -18,8 +19,9 @@ const Profile = () => {
 
   const { userProfile, user } = useSelector(store => store.auth);
 
+  const dispatch = useDispatch();
+
   const isLoggedInUserProfile = user?._id === userProfile?._id;
-  // const isFollowing = false;
   const isFollowing = userProfile?.followers?.includes(user?._id);
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -27,24 +29,38 @@ const Profile = () => {
 
   const displayedPost = activeTab === 'posts' ? userProfile?.posts : userProfile?.bookmarks;
 
-  const followOrUnfollowHandler = async () => {
-    console.log("BUTTON CLICKED");
-
+const followOrUnfollowHandler = async () => {
     try {
-        const res = await axios.post(
-            `http://localhost:3000/api/v1/user/followorunfollow/${userProfile?._id}`,
+        const res = await api.post(
+            `/api/v1/user/followorunfollow/${userProfile?._id}`,
             {},
-            {
-                withCredentials: true,
-            }
         );
 
-        console.log("SUCCESS", res.data);
+        if (res.data.success) {
+
+            const updatedFollowers = isFollowing
+                ? userProfile.followers.filter(
+                    id => id !== user._id
+                  )
+                : [...userProfile.followers, user._id];
+
+            dispatch(
+                setUserProfile({
+                    ...userProfile,
+                    followers: updatedFollowers
+                })
+            );
+
+            toast.success(res.data.message);
+        }
+
     } catch (error) {
-        console.log("ERROR", error);
-        console.log(error.response?.data);
+        console.log(error);
+        toast.error(error.response?.data?.message || 'Action failed');
     }
 };
+
+
   return (
     <div className='flex max-w-5xl justify-center mx-auto pl-10'>
       <div className='flex flex-col gap-20 p-8'>
@@ -90,11 +106,9 @@ const Profile = () => {
                 <p><span className='font-semibold'>{userProfile?.following.length} </span>following</p>
               </div>
               <div className='flex flex-col gap-1'>
-                <span className='font-semibold'>{userProfile?.bio || 'bio here...'}</span>
+                <p className='font-semibold whitespace-pre-line'>{userProfile?.bio || 'bio here...'}</p>
                 <Badge className='w-fit' variant='secondary'><AtSign /> <span className='pl-1'>{userProfile?.username}</span> </Badge>
-                <span>🤯Learn code with patel mernstack style</span>
-                <span>🤯Turing code into fun</span>
-                <span>🤯DM for collaboration</span>
+         
               </div>
             </div>
           </section>

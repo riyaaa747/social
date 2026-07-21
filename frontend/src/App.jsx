@@ -55,18 +55,37 @@ function App() {
 
   useEffect(() => {
     if (user) {
-      const socketio = io('http://localhost:3000', {
+
+      console.log("VITE_API_URL =", import.meta.env.VITE_API_URL);
+
+      const socketio = io(import.meta.env.VITE_API_URL || 'http://localhost:3000', {
         query: {
           userId: user?._id
         },
         // transports: ['websocket']
       });
+
+
+      // 👇 ADD THESE HERE
+socketio.on("connect", () => {
+  console.log("✅ SOCKET CONNECTED:", socketio.id);
+});
+
+socketio.on("disconnect", (reason) => {
+  console.log("❌ SOCKET DISCONNECTED:", reason);
+});
+
+socketio.on("connect_error", (err) => {
+  console.log("❌ CONNECT ERROR:", err.message);
+});
       dispatch(setSocket(socketio));
 
       // listen all the events
-      socketio.on('getOnlineUsers', (onlineUsers) => {
-        dispatch(setOnlineUsers(onlineUsers));
-      });
+      socketio.on("getOnlineUsers", (onlineUsers) => {
+    console.log("ONLINE USERS RECEIVED:", onlineUsers);
+    dispatch(setOnlineUsers(onlineUsers));
+});
+      
 
       socketio.on('notification', (notification) => {
         dispatch(setLikeNotification(notification));

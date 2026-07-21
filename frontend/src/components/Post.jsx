@@ -6,10 +6,12 @@ import { Button } from './ui/button'
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import CommentDialog from './CommentDialog'
 import { useDispatch, useSelector } from 'react-redux'
-import axios from 'axios'
+import api from '@/lib/axios'
 import { toast } from 'sonner'
 import { setPosts, setSelectedPost } from '@/redux/postSlice'
 import { Badge } from './ui/badge'
+import{Link} from 'react-router-dom'
+
 
 const Post = ({ post }) => {
     const [text, setText] = useState("");
@@ -33,14 +35,12 @@ const Post = ({ post }) => {
     const likeOrDislikeHandler = async () => {
         try {
             const action = liked ? 'dislike' : 'like';
-            const res = await axios.get(`http://localhost:3000/api/v1/post/${post._id}/${action}`, { withCredentials: true });
-            console.log(res.data);
+            const res = await api.get(`/api/v1/post/${post._id}/${action}`);
             if (res.data.success) {
                 const updatedLikes = liked ? postLike - 1 : postLike + 1;
                 setPostLike(updatedLikes);
                 setLiked(!liked);
 
-                // apne post ko update krunga
                 const updatedPostData = posts.map(p =>
                     p._id === post._id ? {
                         ...p,
@@ -58,13 +58,11 @@ const Post = ({ post }) => {
     const commentHandler = async () => {
 
         try {
-            const res = await axios.post(`http://localhost:3000/api/v1/post/${post._id}/comment`, { text }, {
+            const res = await api.post(`/api/v1/post/${post._id}/comment`, { text }, {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                withCredentials: true
             });
-            console.log(res.data);
             if (res.data.success) {
                 const updatedCommentData = [...comment, res.data.comment];
                 setComment(updatedCommentData);
@@ -84,7 +82,7 @@ const Post = ({ post }) => {
 
     const deletePostHandler = async () => {
         try {
-            const res = await axios.delete(`http://localhost:3000/api/v1/post/delete/${post?._id}`, { withCredentials: true })
+            const res = await api.delete(`/api/v1/post/delete/${post?._id}`)
             if (res.data.success) {
                 const updatedPostData = posts.filter((postItem) => postItem?._id !== post?._id);
                 dispatch(setPosts(updatedPostData));
@@ -92,13 +90,13 @@ const Post = ({ post }) => {
             }
         } catch (error) {
             console.log(error);
-            toast.error(error.response.data.messsage);
+            toast.error(error.response?.data?.message || 'Failed to delete post');
         }
     }
 
     const bookmarkHandler = async () => {
         try {
-            const res = await axios.get(`http://localhost:3000/api/v1/post/${post?._id}/bookmark`, {withCredentials:true});
+            const res = await api.get(`/api/v1/post/${post?._id}/bookmark`);
             if(res.data.success){
                 toast.success(res.data.message);
             }
@@ -109,16 +107,30 @@ const Post = ({ post }) => {
     return (
         <div className='my-8 w-full md:max-w-sm md:mx-auto'>
             <div className='flex items-center justify-between'>
-                <div className='flex items-center gap-2'>
-                    <Avatar>
-                        <AvatarImage src={post.author?.profilePicture} alt="post_image" />
-                        <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
-                    <div className='flex items-center gap-3'>
-                        <h1>{post.author?.username}</h1>
-                       {user?._id === post.author._id &&  <Badge variant="secondary">Author</Badge>}
-                    </div>
-                </div>
+                <Link
+    to={`/profile/${post.author?._id}`}
+    className='flex items-center gap-2'
+>
+    <Avatar>
+        <AvatarImage
+            src={post.author?.profilePicture}
+            alt="post_image"
+        />
+        <AvatarFallback>CN</AvatarFallback>
+    </Avatar>
+
+    <div className='flex items-center gap-3'>
+        <h1>{post.author?.username}</h1>
+
+        {user?._id === post.author?._id && (
+            <Badge variant="secondary">
+                Author
+            </Badge>
+        )}
+    </div>
+</Link>
+
+
                 <Dialog>
                     <DialogTrigger asChild>
                         <MoreHorizontal className='cursor-pointer' />
@@ -130,7 +142,7 @@ const Post = ({ post }) => {
                         
                         <Button variant='ghost' className="cursor-pointer w-fit">Add to favorites</Button>
                         {
-                            user && user?._id === post?.author._id && <Button onClick={deletePostHandler} variant='ghost' className="cursor-pointer w-fit">Delete</Button>
+                            user && user?._id === post?.author?._id && <Button onClick={deletePostHandler} variant='ghost' className="cursor-pointer w-fit">Delete</Button>
                         }
                     </DialogContent>
                 </Dialog>

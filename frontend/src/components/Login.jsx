@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
-import axios from 'axios';
+import api from '@/lib/axios';
 import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
@@ -26,11 +26,10 @@ const Login = () => {
         e.preventDefault();
         try {
             setLoading(true);
-            const res = await axios.post('http://localhost:3000/api/v1/user/login', input, {
+            const res = await api.post('/api/v1/user/login', input, {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                withCredentials: true
             });
             if (res.data.success) {
                 dispatch(setAuthUser(res.data.user));
@@ -43,7 +42,7 @@ const Login = () => {
             }
         } catch (error) {
             console.log(error);
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || 'Login failed');
         } finally {
             setLoading(false);
         }
@@ -53,7 +52,7 @@ const Login = () => {
         if(user){
             navigate("/");
         }
-    },[])
+    },[user, navigate])
     return (
         <div className='flex items-center w-screen h-screen justify-center'>
             <form onSubmit={signupHandler} className='shadow-lg flex flex-col gap-5 p-8'>
@@ -92,7 +91,7 @@ const Login = () => {
                     )
                 }
 
-                <span className='text-center'>Dosent have an account? <Link to="/signup" className='text-blue-600'>Signup</Link></span>
+                <span className='text-center'>Doesn't have an account? <Link to="/signup" className='text-blue-600'>Signup</Link></span>
             </form>
         </div>
     )

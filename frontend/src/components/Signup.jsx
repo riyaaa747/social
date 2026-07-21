@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
-import axios from 'axios';
+import api from '@/lib/axios';
 import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
@@ -25,11 +25,10 @@ const Signup = () => {
         e.preventDefault();
         try {
             setLoading(true);
-            const res = await axios.post('http://localhost:3000/api/v1/user/register', input, {
+            const res = await api.post('/api/v1/user/register', input, {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                withCredentials: true
             });
             if (res.data.success) {
                 navigate("/login");
@@ -42,7 +41,7 @@ const Signup = () => {
             }
         } catch (error) {
             console.log(error);
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || 'Signup failed');
         } finally {
             setLoading(false);
         }
@@ -52,7 +51,7 @@ const Signup = () => {
         if(user){
             navigate("/");
         }
-    },[])
+    },[user, navigate])
     return (
         <div className='flex items-center w-screen h-screen justify-center'>
             <form onSubmit={signupHandler} className='shadow-lg flex flex-col gap-5 p-8'>

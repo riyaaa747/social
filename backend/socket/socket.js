@@ -1,6 +1,9 @@
 import {Server} from "socket.io";
 import express from "express";
 import http from "http";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 
@@ -42,9 +45,69 @@ io.on('connection', (socket) => {
 
     if (userId) {
         userSocketMap[userId] = socket.id;
+//these two line added
+
+console.log("userSocketMap:", userSocketMap);
+
+io.emit("getOnlineUsers", Object.keys(userSocketMap));
     }
 
     io.emit('getOnlineUsers', Object.keys(userSocketMap));
+
+    //video
+//     socket.on("call-user", ({to, offer}) => {
+//     const receiverSocket =
+//         userSocketMap[to];
+
+//     if(receiverSocket){
+//         io.to(receiverSocket).emit(
+//             "incoming-call",
+//             {
+//                 from:userId,
+//                 offer
+//             }
+//         );
+//     }
+// });
+
+
+
+socket.on("join-group",(groupId)=>{
+
+    socket.join(groupId);
+
+});
+
+// socket.on("answer-call", ({to, answer}) => {
+//     const receiverSocket =
+//         userSocketMap[to];
+
+//     if(receiverSocket){
+//         io.to(receiverSocket).emit(
+//             "call-answered",
+//             {
+//                 answer
+//             }
+//         );
+//     }
+// });
+
+// socket.on("ice-candidate", ({to, candidate}) => {
+//     const receiverSocket =
+//         userSocketMap[to];
+
+//     if(receiverSocket){
+//         io.to(receiverSocket).emit(
+//             "ice-candidate",
+//             {
+//                 candidate
+//             }
+//         );
+//     }
+// });
+
+///
+
 
     socket.on('disconnect', () => {
         console.log("SOCKET DISCONNECTED");
@@ -56,5 +119,6 @@ io.on('connection', (socket) => {
         io.emit('getOnlineUsers', Object.keys(userSocketMap));
     });
 });
+
 
 export {app, server, io};

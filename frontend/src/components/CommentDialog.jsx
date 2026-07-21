@@ -6,7 +6,7 @@ import { MoreHorizontal } from 'lucide-react'
 import { Button } from './ui/button'
 import { useDispatch, useSelector } from 'react-redux'
 import Comment from './Comment'
-import axios from 'axios'
+import api from '@/lib/axios'
 import { toast } from 'sonner'
 import { setPosts } from '@/redux/postSlice'
 
@@ -34,11 +34,10 @@ const CommentDialog = ({ open, setOpen }) => {
   const sendMessageHandler = async () => {
 
     try {
-      const res = await axios.post(`http://localhost:3000/api/v1/post/${selectedPost?._id}/comment`, { text }, {
+      const res = await api.post(`/api/v1/post/${selectedPost?._id}/comment`, { text }, {
         headers: {
           'Content-Type': 'application/json'
         },
-        withCredentials: true
       });
 
       if (res.data.success) {
@@ -52,9 +51,15 @@ const CommentDialog = ({ open, setOpen }) => {
         toast.success(res.data.message);
         setText("");
       }
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (err) {
+    console.error("GROUP MESSAGE ERROR:");
+    console.error(err);
+
+    res.status(500).json({
+        success: false,
+        message: err.message,
+    });
+}
   }
 
   return (
@@ -79,7 +84,6 @@ const CommentDialog = ({ open, setOpen }) => {
                 </Link>
                 <div>
                   <Link className='font-semibold text-xs'>{selectedPost?.author?.username}</Link>
-                  {/* <span className='text-gray-600 text-sm'>Bio here...</span> */}
                 </div>
               </div>
 

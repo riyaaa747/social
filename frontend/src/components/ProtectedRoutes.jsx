@@ -9,8 +9,11 @@ const ProtectedRoutes = ({children}) => {
         if(!user){
             navigate("/login");
         }
-    },[])
-  return <>{children}</>
+    },[user, navigate])
+
+    if (!user) return null;
+
+    return <>{children}</>
 }
 
 export default ProtectedRoutes;

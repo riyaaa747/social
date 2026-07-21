@@ -8,7 +8,9 @@ import postRoute from "./routes/post.route.js";
 import messageRoute from "./routes/message.route.js";
 import { app, server } from "./socket/socket.js";
 import path from "path";
- 
+import groupRoute from "./routes/group.route.js";
+import groupMessageRoute from "./routes/groupMessage.route.js";
+
 dotenv.config();
 
 
@@ -27,6 +29,8 @@ app.use(urlencoded({ extended: true }));
 const corsOptions = {
     origin: [
         "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:5175",
         process.env.URL
     ],
     credentials: true
@@ -39,7 +43,11 @@ app.use(cors(corsOptions));
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/post", postRoute);
 app.use("/api/v1/message", messageRoute);
-
+app.use("/api/v1/group",groupRoute);
+app.use(
+"/api/v1/groupMessage",
+groupMessageRoute
+);
 //comment out
 // app.use(express.static(path.join(__dirname, "/frontend/dist")));
 // app.get("*", (req,res)=>{

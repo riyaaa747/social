@@ -43,6 +43,7 @@ export const addNewPost = async (req, res) => {
 
     } catch (error) {
         console.log(error);
+        return res.status(500).json({ message: 'Internal server error', success: false });
     }
 }
 export const getAllPost = async (req, res) => {
@@ -63,6 +64,7 @@ export const getAllPost = async (req, res) => {
         })
     } catch (error) {
         console.log(error);
+        return res.status(500).json({ message: 'Internal server error', success: false });
     }
 };
 export const getUserPost = async (req, res) => {
@@ -70,13 +72,13 @@ export const getUserPost = async (req, res) => {
         const authorId = req.id;
         const posts = await Post.find({ author: authorId }).sort({ createdAt: -1 }).populate({
             path: 'author',
-            select: 'username, profilePicture'
+            select: 'username profilePicture'
         }).populate({
             path: 'comments',
             sort: { createdAt: -1 },
             populate: {
                 path: 'author',
-                select: 'username, profilePicture'
+                select: 'username profilePicture'
             }
         });
         return res.status(200).json({
@@ -85,6 +87,7 @@ export const getUserPost = async (req, res) => {
         })
     } catch (error) {
         console.log(error);
+        return res.status(500).json({ message: 'Internal server error', success: false });
     }
 }
 export const likePost = async (req, res) => {
@@ -94,9 +97,8 @@ export const likePost = async (req, res) => {
         const post = await Post.findById(postId);
         if (!post) return res.status(404).json({ message: 'Post not found', success: false });
 
-        // like logic started
-        await post.updateOne({ $addToSet: { likes: likeKrneWalaUserKiId } });
-        await post.save();
+        // like logic — use findByIdAndUpdate to avoid stale save
+        await Post.findByIdAndUpdate(postId, { $addToSet: { likes: likeKrneWalaUserKiId } });
 
         // implement socket io for real time notification
         const user = await User.findById(likeKrneWalaUserKiId).select('username profilePicture');
@@ -112,12 +114,15 @@ export const likePost = async (req, res) => {
                 message:'Your post was liked'
             }
             const postOwnerSocketId = getReceiverSocketId(postOwnerId);
-            io.to(postOwnerSocketId).emit('notification', notification);
+            if (postOwnerSocketId) {
+                io.to(postOwnerSocketId).emit('notification', notification);
+            }
         }
 
         return res.status(200).json({message:'Post liked', success:true});
     } catch (error) {
-
+        console.log(error);
+        return res.status(500).json({ message: 'Internal server error', success: false });
     }
 }
 export const dislikePost = async (req, res) => {
@@ -127,9 +132,8 @@ export const dislikePost = async (req, res) => {
         const post = await Post.findById(postId);
         if (!post) return res.status(404).json({ message: 'Post not found', success: false });
 
-        // like logic started
-        await post.updateOne({ $pull: { likes: likeKrneWalaUserKiId } });
-        await post.save();
+        // dislike logic — use findByIdAndUpdate to avoid stale save
+        await Post.findByIdAndUpdate(postId, { $pull: { likes: likeKrneWalaUserKiId } });
 
         // implement socket io for real time notification
         const user = await User.findById(likeKrneWalaUserKiId).select('username profilePicture');
@@ -141,17 +145,18 @@ export const dislikePost = async (req, res) => {
                 userId:likeKrneWalaUserKiId,
                 userDetails:user,
                 postId,
-                message:'Your post was liked'
+                message:'Your post was unliked'
             }
             const postOwnerSocketId = getReceiverSocketId(postOwnerId);
-            io.to(postOwnerSocketId).emit('notification', notification);
+            if (postOwnerSocketId) {
+                io.to(postOwnerSocketId).emit('notification', notification);
+            }
         }
-
-
 
         return res.status(200).json({message:'Post disliked', success:true});
     } catch (error) {
-
+        console.log(error);
+        return res.status(500).json({ message: 'Internal server error', success: false });
     }
 }
 export const addComment = async (req,res) =>{
@@ -187,6 +192,7 @@ export const addComment = async (req,res) =>{
 
     } catch (error) {
         console.log(error);
+        return res.status(500).json({ message: 'Internal server error', success: false });
     }
 };
 export const getCommentsOfPost = async (req,res) => {
@@ -201,6 +207,7 @@ export const getCommentsOfPost = async (req,res) => {
 
     } catch (error) {
         console.log(error);
+        return res.status(500).json({ message: 'Internal server error', success: false });
     }
 }
 export const deletePost = async (req,res) => {
@@ -232,6 +239,7 @@ export const deletePost = async (req,res) => {
 
     } catch (error) {
         console.log(error);
+        return res.status(500).json({ message: 'Internal server error', success: false });
     }
 }
 export const bookmarkPost = async (req,res) => {
@@ -249,7 +257,7 @@ export const bookmarkPost = async (req,res) => {
             return res.status(200).json({type:'unsaved', message:'Post removed from bookmark', success:true});
 
         }else{
-            // bookmark krna pdega
+            // bookmark it
             await user.updateOne({$addToSet:{bookmarks:post._id}});
             await user.save();
             return res.status(200).json({type:'saved', message:'Post bookmarked', success:true});
@@ -257,5 +265,6 @@ export const bookmarkPost = async (req,res) => {
 
     } catch (error) {
         console.log(error);
+        return res.status(500).json({ message: 'Internal server error', success: false });
     }
 }

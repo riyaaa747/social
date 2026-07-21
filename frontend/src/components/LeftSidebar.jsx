@@ -2,7 +2,7 @@ import { Heart, Home, LogOut, MessageCircle, PlusSquare, Search, TrendingUp } fr
 import React, { useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { toast } from 'sonner'
-import axios from 'axios'
+import api from '@/lib/axios'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { setAuthUser } from '@/redux/authSlice'
@@ -21,7 +21,7 @@ const LeftSidebar = () => {
 
     const logoutHandler = async () => {
         try {
-            const res = await axios.get('http://localhost:3000/api/v1/user/logout', { withCredentials: true });
+            const res = await api.get('/api/v1/user/logout');
             if (res.data.success) {
                 dispatch(setAuthUser(null));
                 dispatch(setSelectedPost(null));
@@ -30,7 +30,7 @@ const LeftSidebar = () => {
                 toast.success(res.data.message);
             }
         } catch (error) {
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || 'Logout failed');
         }
     }
 
@@ -50,8 +50,6 @@ const LeftSidebar = () => {
 
     const sidebarItems = [
         { icon: <Home />, text: "Home" },
-        // { icon: <Search />, text: "Search" },
-        // { icon: <TrendingUp />, text: "Explore" },
         { icon: <MessageCircle />, text: "Messages" },
         { icon: <Heart />, text: "Notifications" },
         { icon: <PlusSquare />, text: "Create" },
@@ -67,7 +65,6 @@ const LeftSidebar = () => {
         { icon: <LogOut />, text: "Logout" },
     ]
     return (
-        // <div className='hidden lg:block fixed top-0 z-10 left-0 px-4 border-r border-gray-300 w-[16%] h-screen'>
         <div className='hidden lg:block fixed top-0 left-0 z-10 px-4 border-r border-gray-300 w-[16%] h-screen '>
             <div className='flex flex-col'>
                 <h1 className='my-8 pl-3 font-bold text-xl'>SOCIAL</h1>
