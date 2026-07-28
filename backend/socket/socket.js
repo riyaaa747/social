@@ -11,7 +11,13 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
     cors:{
-        origin:process.env.URL,
+        // origin:process.env.URL,
+         origin: [
+            "http://localhost:5173",
+            "https://social-riya13.vercel.app",
+            "https://social-git-main-riya13.vercel.app",
+            "https://social-gd7w9uyu3-riya13.vercel.app"
+        ],
         methods:['GET','POST'],
         credentials:true
     }
