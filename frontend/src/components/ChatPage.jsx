@@ -15,11 +15,11 @@ import CreateGroupModal from "./CreateGroupModal";
 import ViewGroupMembersModal from "./ViewGroupMembersModal";
 import ModifyGroupModal from "./ModifyGroupModal";
 import { toast } from "sonner";
-
+import useGetFollowingUsers from "@/hooks/useGetFollowingUsers";
 
 const ChatPage = () => {
     const [textMessage, setTextMessage] = useState("");
-    const { user, suggestedUsers, selectedUser } = useSelector(store => store.auth);
+    const { user, followingUsers, selectedUser } = useSelector(store => store.auth);
   //  const { onlineUsers, messages } = useSelector(store => store.chat);
     const {onlineUsers,messages,groups} = useSelector(store => store.chat);
     const [openGroup, setOpenGroup] = useState(false);
@@ -116,16 +116,28 @@ const ChatPage = () => {
     },[dispatch]);
 
     useGetGroups();
-
+    
+    useGetFollowingUsers();
 
 console.log("CHAT STATE:", {
-    suggestedUsers,
+    followingUsers,
     groups
 });
 
 
+// const chatList = [
+//     ...((suggestedUsers || []).map(user => ({
+//         ...user,
+//         chatType: "user"
+//     }))),
+
+//     ...((groups || []).map(group => ({
+//         ...group,
+//         chatType: "group"
+//     })))
+// ];
 const chatList = [
-    ...((suggestedUsers || []).map(user => ({
+    ...((followingUsers || []).map(user => ({
         ...user,
         chatType: "user"
     }))),
@@ -135,9 +147,8 @@ const chatList = [
         chatType: "group"
     })))
 ];
-
 console.log({
-    suggestedUsers,
+    followingUsers,
     groups,
     chatList
 });

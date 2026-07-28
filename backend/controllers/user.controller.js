@@ -287,3 +287,30 @@ export const followOrUnfollow = async (req, res) => {
         });
     }
 }
+
+
+export const getFollowingUsers = async (req, res) => {
+    try {
+        const currentUser = await User.findById(req.id)
+            .populate("following", "-password");
+
+        if (!currentUser) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            users: currentUser.following
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
+    }
+};
