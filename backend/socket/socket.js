@@ -116,15 +116,25 @@ socket.on("join-group",(groupId)=>{
 ///
 
 
-    socket.on('disconnect', () => {
-        console.log("SOCKET DISCONNECTED");
+    socket.on("disconnect", () => {
+    console.log("SOCKET DISCONNECTED:", socket.id);
 
-        if (userId) {
-            delete userSocketMap[userId];
-        }
+    if (userSocketMap[userId] === socket.id) {
+        delete userSocketMap[userId];
+    }
 
-        io.emit('getOnlineUsers', Object.keys(userSocketMap));
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
     });
+
+    // socket.on('disconnect', () => {
+    //     console.log("SOCKET DISCONNECTED");
+
+    //     if (userId) {
+    //         delete userSocketMap[userId];
+    //     }
+
+    //     io.emit('getOnlineUsers', Object.keys(userSocketMap));
+    // });
 });
 
 
