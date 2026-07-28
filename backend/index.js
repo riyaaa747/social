@@ -31,6 +31,7 @@ const corsOptions = {
         "http://localhost:5173",
         "http://localhost:5174",
         "http://localhost:5175",
+        "https://social-mocha-three.vercel.app",
          "https://social-riya13.vercel.app",
         "https://social-git-main-riya13.vercel.app",
         "https://social-gd7w9uyu3-riya13.vercel.app",
