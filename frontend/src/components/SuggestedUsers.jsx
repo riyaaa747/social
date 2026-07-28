@@ -6,7 +6,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useDispatch } from 'react-redux';
 import { setSuggestedUsers } from '@/redux/authSlice';
-
+import api from "@/lib/axios";
 
 
 const SuggestedUsers = () => {
@@ -14,12 +14,9 @@ const SuggestedUsers = () => {
     const dispatch = useDispatch();
     const followHandler = async (id) => {
         try {
-            const res = await axios.post(
+            const res = await api.post(
                 `/api/v1/user/followorunfollow/${id}`,
-                {},
-                {
-                    withCredentials: true,
-                }
+                {}
             );
 
             if(res.data.success){
