@@ -15,7 +15,7 @@ const SuggestedUsers = () => {
     const followHandler = async (id) => {
         try {
             const res = await axios.post(
-                `http://localhost:3000/api/v1/user/followorunfollow/${id}`,
+                `/api/v1/user/followorunfollow/${id}`,
                 {},
                 {
                     withCredentials: true,
