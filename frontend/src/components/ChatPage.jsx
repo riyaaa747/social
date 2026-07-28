@@ -125,17 +125,7 @@ console.log("CHAT STATE:", {
 });
 
 
-// const chatList = [
-//     ...((suggestedUsers || []).map(user => ({
-//         ...user,
-//         chatType: "user"
-//     }))),
 
-//     ...((groups || []).map(group => ({
-//         ...group,
-//         chatType: "group"
-//     })))
-// ];
 const chatList = [
     ...((followingUsers || []).map(user => ({
         ...user,
@@ -179,13 +169,7 @@ console.log("SELECTED USER:", selectedUser);
                                         <AvatarFallback>CN</AvatarFallback>
                                     </Avatar>
                                     
-                                    {/* <div className='flex flex-col'>
-                                        
-                                        {suggestedUser.chatType === "group"
-        ? suggestedUser.name
-        : suggestedUser.username}
-                                        <span className={`text-xs font-bold ${isOnline ? 'text-green-600' : 'text-red-600'} `}>{isOnline ? 'online' : 'offline'}</span>
-                                    </div> */}
+                                   
 
                                     <div className='flex flex-col'>
 
