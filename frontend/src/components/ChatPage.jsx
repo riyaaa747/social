@@ -16,7 +16,7 @@ import ViewGroupMembersModal from "./ViewGroupMembersModal";
 import ModifyGroupModal from "./ModifyGroupModal";
 import { toast } from "sonner";
 import useGetFollowingUsers from "@/hooks/useGetFollowingUsers";
-
+import myIcon from "@/assets/myIcon.jpg";
 
 const ChatPage = () => {
     const [textMessage, setTextMessage] = useState("");
@@ -182,7 +182,7 @@ console.log("SELECTED USER:", selectedUser);
  onClick={() => dispatch(setSelectedUser(suggestedUser))} className='flex gap-3 items-center p-3 hover:bg-gray-50 cursor-pointer'>
                                     <Avatar className='w-14 h-14'>
                                         <AvatarImage src={suggestedUser?.profilePicture} />
-                                        <AvatarFallback>CN</AvatarFallback>
+                                        <AvatarFallback className="bg-blue-100 text-white font-semibold">P</AvatarFallback>
                                     </Avatar>
                                     
                                    
@@ -236,7 +236,7 @@ onClick={()=>setOpenGroup(true)}
     }
     alt="profile"
 />
-                                <AvatarFallback>CN</AvatarFallback>
+                                <AvatarFallback className="bg-blue-200 text-white font-semibold">P</AvatarFallback>
                             </Avatar>
                             {/* <div className='flex flex-col'>
                                 <span>{selectedUser?.username}</span>
@@ -273,7 +273,12 @@ onClick={()=>setOpenGroup(true)}
             onClick={() => setOpenCall(true)}
             className="p-2 rounded-full hover:bg-gray-100"
         >
-            <Video size={22}/>
+            {/* <Video size={22}/> */}
+             <img
+        src={myIcon}
+        alt="Video Call"
+        className="w-9 h-9 object-contain"
+    />
         </button>
     )}
 
@@ -302,7 +307,7 @@ onClick={()=>setOpenGroup(true)}
                         <Messages selectedUser={selectedUser} />
                         <div className='flex items-center p-4 border-t border-t-gray-300'>
                             <Input value={textMessage} onChange={(e) => setTextMessage(e.target.value)}  onKeyDown={(e) => {if (e.key === "Enter") {e.preventDefault();sendMessageHandler();}}} type="text" className='flex-1 mr-2 focus-visible:ring-transparent' placeholder="Messages..." />
-                            {/* <Button onClick={() => sendMessageHandler(selectedUser?._id)}>Send</Button> */}
+                       
                             <Button onClick={sendMessageHandler}>Send</Button>
                         </div>
                     </section>

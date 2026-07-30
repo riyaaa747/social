@@ -67,7 +67,7 @@ const CreatePost = ({ open, setOpen }) => {
         <div className='flex gap-3 items-center'>
           <Avatar>
             <AvatarImage src={user?.profilePicture} alt="img" />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarFallback>P</AvatarFallback>
           </Avatar>
           <div>
             <h1 className='font-semibold text-xs'>{user?.username}</h1>

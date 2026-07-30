@@ -116,7 +116,7 @@ const Post = ({ post }) => {
             src={post.author?.profilePicture}
             alt="post_image"
         />
-        <AvatarFallback>CN</AvatarFallback>
+        <AvatarFallback className="bg-blue-200 text-white font-semibold">P</AvatarFallback>
     </Avatar>
 
     <div className='flex items-center gap-3'>

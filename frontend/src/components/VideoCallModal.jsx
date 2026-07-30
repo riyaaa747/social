@@ -326,14 +326,14 @@ const handleIce = async ({ candidate }) => {
         autoPlay
         playsInline
         muted
-        className="w-[550px] h-[450px] border"
+        className="w-[550px] h-[415px] border"
     />
 
     <video
         ref={remoteVideo}
         autoPlay
         playsInline
-        className="w-[550px] h-[450px] border"
+        className="w-[550px] h-[415px] border"
     />
 
 </div>

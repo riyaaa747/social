@@ -12,7 +12,7 @@ const RightSidebar = () => {
         <Link to={`/profile/${user?._id}`}>
           <Avatar>
             <AvatarImage src={user?.profilePicture} alt="post_image" />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarFallback className="bg-blue-200 text-white font-semibold">P</AvatarFallback>
           </Avatar>
         </Link>
         <div>

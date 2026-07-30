@@ -49,7 +49,7 @@ const navigate = useNavigate();
                                     src={member.profilePicture}
                                 />
 
-                                <AvatarFallback>
+                                <AvatarFallback className="bg-blue-200 text-white font-semibold">
                                     {member.username[0]}
                                 </AvatarFallback>
 

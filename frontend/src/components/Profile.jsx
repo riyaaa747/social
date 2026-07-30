@@ -68,7 +68,7 @@ const followOrUnfollowHandler = async () => {
           <section className='flex items-center justify-center'>
             <Avatar className='h-32 w-32'>
               <AvatarImage src={userProfile?.profilePicture} alt="profilephoto" />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarFallback className="bg-blue-200 text-white font-semibold">P</AvatarFallback>
             </Avatar>
           </section>
           <section>
