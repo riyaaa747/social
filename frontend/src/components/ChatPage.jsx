@@ -8,14 +8,15 @@ import { MessageCircleCode } from 'lucide-react';
 import Messages from './Messages';
 import api from '@/lib/axios';
 import { setMessages } from '@/redux/chatSlice';
-// import { Phone } from "lucide-react";
-// import VideoCallModal from "./VideoCallModal";
+import { Phone, Video } from "lucide-react";
+import VideoCallModal from "./VideoCallModal";
 import useGetGroups from "@/hooks/useGetGroups";
 import CreateGroupModal from "./CreateGroupModal";
 import ViewGroupMembersModal from "./ViewGroupMembersModal";
 import ModifyGroupModal from "./ModifyGroupModal";
 import { toast } from "sonner";
 import useGetFollowingUsers from "@/hooks/useGetFollowingUsers";
+
 
 const ChatPage = () => {
     const [textMessage, setTextMessage] = useState("");
@@ -25,6 +26,7 @@ const ChatPage = () => {
     const [openGroup, setOpenGroup] = useState(false);
     const [openMembers, setOpenMembers] = useState(false);
     const [openModifyGroup, setOpenModifyGroup] = useState(false);
+    const [incomingCall, setIncomingCall] = useState(null);
     const dispatch = useDispatch();
 
 
@@ -44,21 +46,35 @@ const ChatPage = () => {
 
 }, [socket, selectedUser]);
 
-    // const sendMessageHandler = async (receiverId) => {
-    //     try {
-    //         const res = await api.post(`/api/v1/message/send/${receiverId}`, { textMessage }, {
-    //             headers: {
-    //                 'Content-Type': 'application/json'
-    //             },
-    //         });
-    //         if (res.data.success) {
-    //             dispatch(setMessages([...messages, res.data.newMessage]));
-    //             setTextMessage("");
-    //         }
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
+useEffect(() => {
+
+    if (!socket) return;
+
+    const receiveCall = ({ from, offer }) => {
+
+        console.log("📞 INCOMING CALL");
+        console.log("FROM =", from);
+
+        console.log("FOLLOWING USERS =", followingUsers);
+
+        setIncomingCall({
+            from,
+            offer
+        });
+
+        setOpenCall(true);
+
+    };
+
+    socket.on("incoming-call", receiveCall);
+
+    return () => {
+        socket.off("incoming-call", receiveCall);
+    };
+
+}, [socket, followingUsers]);
+
+
 
     const sendMessageHandler = async () => {
 
@@ -245,9 +261,22 @@ onClick={()=>setOpenGroup(true)}
         <Phone size={22}/>
     </button> */}
 
-    <div className="ml-auto flex items-center gap-2">
+    {/* <div className="ml-auto flex items-center gap-2">
 
    
+    {selectedUser?.chatType === "group" && ( */}
+
+    <div className="ml-auto flex items-center gap-2">
+
+    {selectedUser?.chatType !== "group" && (
+        <button
+            onClick={() => setOpenCall(true)}
+            className="p-2 rounded-full hover:bg-gray-100"
+        >
+            <Video size={22}/>
+        </button>
+    )}
+
     {selectedUser?.chatType === "group" && (
         <>
             <Button
@@ -285,12 +314,14 @@ onClick={()=>setOpenGroup(true)}
                     </div>
                 )
             }
-            {/* <VideoCallModal
-            socket={socket}
-            selectedUser={selectedUser}
-            open={openCall}
-            setOpen={setOpenCall}
-        /> */}
+            <VideoCallModal
+    socket={socket}
+    selectedUser={selectedUser}
+    open={openCall}
+    setOpen={setOpenCall}
+    incomingCall={incomingCall}
+/>
+
         <CreateGroupModal
     open={openGroup}
     setOpen={setOpenGroup}

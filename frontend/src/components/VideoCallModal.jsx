@@ -12,6 +12,7 @@ const servers = {
 
 
 
+
 const VideoCallModal = ({
     socket,
     selectedUser,
@@ -27,24 +28,22 @@ const remoteVideo = useRef(null);
         new RTCPeerConnection(servers)
     );
 
-    pc.current.onicecandidate =
-    (event) => {
+    pc.current.onicecandidate = (event) => {
 
-        if(event.candidate){
+    if (!event.candidate) return;
 
-            console.log(
-                "SENDING ICE"
-            );
+    if (!selectedUser?._id) {
+        console.log("No selected user, skipping ICE");
+        return;
+    }
 
-            socket.emit(
-                "ice-candidate",
-                {
-                    to:selectedUser._id,
-                    candidate:event.candidate
-                }
-            );
-        }
-    };
+    console.log("SENDING ICE");
+
+    socket.emit("ice-candidate", {
+        to: selectedUser._id,
+        candidate: event.candidate,
+    });
+};
 
 
     // ==========================
@@ -77,6 +76,7 @@ const remoteVideo = useRef(null);
             pc.current
                 .signalingState
         );
+        if (!selectedUser?._id) return;
 
         socket.emit(
             "call-user",
@@ -109,10 +109,10 @@ const startCamera = async () => {
             pc.current.addTrack(track, stream);
         });
 
-        pc.current.ontrack = (event) => {
-            console.log("REMOTE TRACK");
-            remoteVideo.current.srcObject = event.streams[0];
-        };
+        // pc.current.ontrack = (event) => {
+        //     console.log("REMOTE TRACK");
+        //     remoteVideo.current.srcObject = event.streams[0];
+        // };
 
     } catch (err) {
         console.error("Camera error:", err);
@@ -172,6 +172,16 @@ const handleIce = async ({ candidate }) => {
     await pc.current.setRemoteDescription(
         new RTCSessionDescription(offer)
     );
+
+    while (pendingCandidates.current.length) {
+
+    const candidate = pendingCandidates.current.shift();
+
+    await pc.current.addIceCandidate(
+        new RTCIceCandidate(candidate)
+    );
+
+    }
 
     console.log("3 REMOTE SET");
 
@@ -246,10 +256,20 @@ const handleIce = async ({ candidate }) => {
 
     if (!socket) return;
 
+   pc.current.ontrack = (event) => {
+
+        console.log("REMOTE TRACK");
+
+        if (remoteVideo.current) {
+            remoteVideo.current.srcObject = event.streams[0];
+        }
+
+    };
+
     console.log("Registering socket listeners");
 
 
-        if (!socket) return;
+        
 
         socket.on(
             "incoming-call",
@@ -343,4 +363,4 @@ const handleIce = async ({ candidate }) => {
     );
 };
 
-// export default VideoCallModal;
+export default VideoCallModal;

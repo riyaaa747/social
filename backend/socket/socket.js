@@ -28,21 +28,6 @@ const userSocketMap = {} ; // this map stores socket id corresponding the user i
 
 export const getReceiverSocketId = (receiverId) => userSocketMap[receiverId];
 
-// io.on('connection', (socket)=>{
-//     const userId = socket.handshake.query.userId;
-//     if(userId){
-//         userSocketMap[userId] = socket.id;
-//     }
-
-//     io.emit('getOnlineUsers', Object.keys(userSocketMap));
-
-//     socket.on('disconnect',()=>{
-//         if(userId){
-//             delete userSocketMap[userId];
-//         }
-//         io.emit('getOnlineUsers', Object.keys(userSocketMap));
-//     });
-// })
 
 io.on('connection', (socket) => {
     console.log("SOCKET CONNECTED");
@@ -52,7 +37,6 @@ io.on('connection', (socket) => {
 
     if (userId) {
         userSocketMap[userId] = socket.id;
-//these two line added
 
 console.log("userSocketMap:", userSocketMap);
 
@@ -60,22 +44,22 @@ io.emit("getOnlineUsers", Object.keys(userSocketMap));
     }
 
     io.emit('getOnlineUsers', Object.keys(userSocketMap));
+    
+    // video call related socket events
+    socket.on("call-user", ({to, offer}) => {
+    const receiverSocket =
+        userSocketMap[to];
 
-    //video
-//     socket.on("call-user", ({to, offer}) => {
-//     const receiverSocket =
-//         userSocketMap[to];
-
-//     if(receiverSocket){
-//         io.to(receiverSocket).emit(
-//             "incoming-call",
-//             {
-//                 from:userId,
-//                 offer
-//             }
-//         );
-//     }
-// });
+    if(receiverSocket){
+        io.to(receiverSocket).emit(
+            "incoming-call",
+            {
+                from:userId,
+                offer
+            }
+        );
+    }
+});
 
 
 
@@ -85,35 +69,35 @@ socket.on("join-group",(groupId)=>{
 
 });
 
-// socket.on("answer-call", ({to, answer}) => {
-//     const receiverSocket =
-//         userSocketMap[to];
+socket.on("answer-call", ({to, answer}) => {
+    const receiverSocket =
+        userSocketMap[to];
 
-//     if(receiverSocket){
-//         io.to(receiverSocket).emit(
-//             "call-answered",
-//             {
-//                 answer
-//             }
-//         );
-//     }
-// });
+    if(receiverSocket){
+        io.to(receiverSocket).emit(
+            "call-answered",
+            {
+                answer
+            }
+        );
+    }
+});
 
-// socket.on("ice-candidate", ({to, candidate}) => {
-//     const receiverSocket =
-//         userSocketMap[to];
+socket.on("ice-candidate", ({to, candidate}) => {
+    const receiverSocket =
+        userSocketMap[to];
 
-//     if(receiverSocket){
-//         io.to(receiverSocket).emit(
-//             "ice-candidate",
-//             {
-//                 candidate
-//             }
-//         );
-//     }
-// });
+    if(receiverSocket){
+        io.to(receiverSocket).emit(
+            "ice-candidate",
+            {
+                candidate
+            }
+        );
+    }
+});
 
-///
+
 
 
     socket.on("disconnect", () => {
@@ -126,15 +110,7 @@ socket.on("join-group",(groupId)=>{
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
     });
 
-    // socket.on('disconnect', () => {
-    //     console.log("SOCKET DISCONNECTED");
-
-    //     if (userId) {
-    //         delete userSocketMap[userId];
-    //     }
-
-    //     io.emit('getOnlineUsers', Object.keys(userSocketMap));
-    // });
+    
 });
 
 
