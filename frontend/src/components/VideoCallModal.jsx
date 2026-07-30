@@ -326,36 +326,38 @@ const handleIce = async ({ candidate }) => {
         autoPlay
         playsInline
         muted
-        className="w-80 border"
+        className="w-[550px] h-[450px] border"
     />
 
     <video
         ref={remoteVideo}
         autoPlay
         playsInline
-        className="w-80 border"
+        className="w-[550px] h-[450px] border"
     />
 
 </div>
 
-                <button
-    onClick={()=>{
-        console.log(
-            "CALL BUTTON CLICKED"
-        );
-        startCall();
-    }}
-    className="bg-green-600 hover:bg-green-300 text-white px-6 py-3 rounded"
->
-    Call
-</button>
+                <div className="flex gap-6 mt-50">
 
-                <button
-                    onClick={() => setOpen(false)}
-                    className="bg-red-600 text-white px-6 py-3 rounded"
-                >
-                    Close
-                </button>
+    <button
+        onClick={() => {
+            console.log("CALL BUTTON CLICKED");
+            startCall();
+        }}
+        className="bg-green-600 hover:bg-green-500 hover:scale-110 active:scale-95 transition-all duration-200 text-white px-6 py-2 rounded-xl text-lg font-semibold shadow-lg"
+    >
+        📞 Call
+    </button>
+
+    <button
+        onClick={() => setOpen(false)}
+        className="bg-red-600 hover:bg-red-500 hover:scale-110 active:scale-95 transition-all duration-200 text-white px-6 py-2 rounded-xl text-lg font-semibold shadow-lg"
+    >
+        ❌ Close
+    </button>
+
+</div>
 
             </div>
 
